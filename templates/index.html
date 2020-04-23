@@ -75,8 +75,11 @@
         <td> Task: <input type="text" name="task"></input></td>
        </tr>
        <tr>
-      <td> Email: <input type="text" name="email"></input>{{email_error}}</td>
+      <td> Email: <input type="text" name="email"></input></td>
         </tr>
+        {% if email_error != "" %}
+          <tr><td>{{email_error}}</td></tr>
+        {% endif %}
 
 <!-- Radio button test -->
         <!-- <tr>
@@ -95,7 +98,7 @@
 
          <tr>
            <td><input type="submit" value="Add To Do Item">
-             <input type="button" value="Clear" onclick="location.href='/'">
+             <input type="button" value="Clear" onclick="location.href='/clear'">
            </td>
          </tr>
        </table>

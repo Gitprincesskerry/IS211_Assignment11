@@ -3,18 +3,25 @@
 # This is Kerry Rainford's Week 11 Assignment
 
 import re
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, redirect, url_for
 app = Flask(__name__)
+app.secret_key = b'_5#y2L"F4Q8z\n\xec]/'
 
-email_error = ""
-regex = '^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$'
-def check(email):
-    if(re.search(regex,email)):
-        email_error = ""
-        return email_error
+EMAIL_REGEX = r"^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
+
+
+def is_valid_email(email):
+    """
+    Check if the email is correct
+
+    :param email:
+    :return:
+    """
+    if re.search(EMAIL_REGEX, email):
+        return True
     else:
-        email_error = "Email error, Invalid Email"
-        return email_error
+        return False
+
 
 tasklist = []
 
@@ -24,7 +31,8 @@ class Item:
         self.email = email
         self.priority = priority
 
-@app.route('/', methods = ['GET','POST'])
+
+@app.route('/', methods=['GET','POST'])
 def kerry_start():
     return render_template('index.html')
 
@@ -35,18 +43,23 @@ def submit():
     email = request.form['email']
     priority = request.form['Priority']
 
-
-    valid_email = check(email)
-    if valid_email=="":
+    if is_valid_email(email):
         item = Item(task, email, priority)
         tasklist.append(item)
+        email_error = ""
+    else:
+        email_error = "There was an email error"
 
-    return render_template('index.html',methods=['GET','POST'], tasklist=tasklist, email_error=valid_email)
+    return render_template('index.html', methods=['GET', 'POST'], tasklist=tasklist, email_error=email_error)
 
-@app.route('/clear', methods = ['GET','POST'])
+
+@app.route('/clear', methods=['GET', 'POST'])
 def clear():
-    tasklist = []
-    return render_template('index.html', methods = ['GET','POST'], tasklist=tasklist)
+    global tasklist
+
+    tasklist.clear()
+    return redirect(url_for('kerry_start'))
+
 
 if __name__ == "__main__":
     app.run()
